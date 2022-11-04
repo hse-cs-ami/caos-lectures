@@ -1,0 +1,6 @@
+[book]
+authors = ["Alexander Myltsev"]
+language = "ru"
+multilingual = false
+src = "src"
+title = "HSE CAOS 2022"
