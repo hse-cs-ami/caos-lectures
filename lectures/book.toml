@@ -4,3 +4,6 @@ language = "ru"
 multilingual = false
 src = "src"
 title = "HSE CAOS 2022"
+
+[output.html]
+mathjax-support = true
