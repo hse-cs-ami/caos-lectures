@@ -27,6 +27,8 @@ Intel 8088, а более поздние модели — процессорам
     cmovbe %rcx,%rax
 ```
 
+AT&T vs Intel.
+
 ## Регистры
 «Переменные» внутри процессора.
 
@@ -54,19 +56,29 @@ Instruction pointer (program counter): `eip`.
 Наша первая мнемоника: `mov`.
 ```
 mov SRC, DST   // копировать SRC в DST
-mov %eax, %ebx // скопировать биты eax в ebx
-               // старое значение ebx теряется
+
+movl %eax, %ebx // скопировать биты eax в ebx
+                // старое значение ebx теряется
+movw %ax, %bx
+movb %ah, %bl
 ```
-Справочник: [https://www.felixcloutier.com/x86/mov]()
+
+Суффиксы размера операндов:
+* b (byte) — 8 бит
+* w (word) — 16 бит
+* l (long) — 32 бита
+* q (quad) — 64 бита (не используем)
+
+Справочник (в синтаксисе Intel): [https://www.felixcloutier.com/x86/mov]()
 
 Список инструкций: [https://www.felixcloutier.com/x86/index.html]()
 
 Непосредственно заданный операнд:
 ```
-mov $42, %ecx   // положить в %ecx битовое представление числа 42
+movl $42, %ecx   // положить в %ecx битовое представление числа 42
 
-mov $0x80, %edx // шестнадцатеричная запись операнда
-mov $-1, %eax   // установить все биты eax в 1
+movl $0x80, %edx // шестнадцатеричная запись операнда
+movl $-1, %eax   // установить все биты eax в 1
 ```
 
 ## Библиотека simpleio
@@ -82,9 +94,9 @@ call finish     // завершить исполнение программы
     .global main
 main:
     call readi32     // считали первое число
-    mov %eax, %ecx   // сохранили его в ecx
+    movl %eax, %ecx   // сохранили его в ecx
     call readi32     // считали второе число в eax
-    add %ecx, %eax   // сложили первое и второе
+    addl %ecx, %eax   // сложили первое и второе
     call writei32    // вывели результат
     call finish      // завершили программу
 ```
@@ -99,8 +111,36 @@ $ ./sum
 ## Некоторые арифметические инструкции
 
 ```
-add SRC, DST
-sub SRC, DST
-inc DST
-dec DST
+add SRC, DST  // DST += SRC
+sub SRC, DST  // DST -= SRC
+inc DST       // DST++
+dec DST       // DST--
+neg DST       // DST = -DST
+not DST       // DST = ~DST
+and SRC, DST  // DST &= SRC
+or  SRC, DST  // DST |= SRC
+xor SRC, DST  // DST ^= SRC
 ```
+
+## Инструкции сдвига
+Логический сдвиг: двигаем биты внутри регистра,
+дополняя его нулями и теряя то, что «выпало».
+
+```
+movw $0x1234, %ax
+shrw $4, %ax        // ax == 0x0123
+shlw $4, %ax        // ax == 0x1230
+addw $7, %ax        // ax == 0x1237
+rorw $4, %ax        // ax == 0x7123
+```
+
+Арифметический сдвиг вправо: двигаем биты, дополняя
+слева знаковым битом
+
+```
+movw 0xfff0, %ax    // ax == -16
+sarw $4, %ax        // ax == 0xffff == -1
+salw $5, %ax        // ax == 0xfff0 == -16
+```
+
+См. также [справочник](https://www.felixcloutier.com/x86/sal:sar:shl:shr).
