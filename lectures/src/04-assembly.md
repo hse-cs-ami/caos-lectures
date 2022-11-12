@@ -64,14 +64,14 @@ movb %ah, %bl
 ```
 
 Суффиксы размера операндов:
-* b (byte) — 8 бит
-* w (word) — 16 бит
-* l (long) — 32 бита
-* q (quad) — 64 бита (не используем)
+* `b` (byte) — 8 бит
+* `w` (word) — 16 бит
+* `l` (long) — 32 бита
+* `q` (quad) — 64 бита (не используем)
 
-Справочник (в синтаксисе Intel): [https://www.felixcloutier.com/x86/mov]()
+[Справочник (в синтаксисе Intel)](https://www.felixcloutier.com/x86/mov)
 
-Список инструкций: [https://www.felixcloutier.com/x86/index.html]()
+[Список инструкций](https://www.felixcloutier.com/x86/index.html)
 
 Непосредственно заданный операнд:
 ```x86asm
@@ -94,9 +94,9 @@ call finish     // завершить исполнение программы
     .global main
 main:
     call readi32     // считали первое число
-    movl %eax, %ecx   // сохранили его в ecx
+    movl %eax, %ecx  // сохранили его в ecx
     call readi32     // считали второе число в eax
-    addl %ecx, %eax   // сложили первое и второе
+    addl %ecx, %eax  // сложили первое и второе
     call writei32    // вывели результат
     call finish      // завершили программу
 ```
