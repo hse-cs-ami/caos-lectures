@@ -42,9 +42,9 @@ Instruction pointer (program counter): `eip`.
 `ebx` | `bx` | `bh`, `bl`
 `ecx` | `cx` | `ch`, `cl`
 `edx` | `dx` | `dh`, `dl`
-`esi` | `si` | —, `sil`
-`edi` | `di` | —, `dil`
-`ebp` | `bp` | —, `bpl`
+`esi` | `si` | —
+`edi` | `di` | —
+`ebp` | `bp` | —
 
 (Есть ещё регистр `esp`, который мы пока не трогаем.)
 
