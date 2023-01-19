@@ -88,3 +88,27 @@ asm("nop");
 // Extended asm
 // asm(template : outputs : inputs : clobbers)
 ```
+
+[Какое-то красивое подробное описание](https://www.opennet.ru/base/dev/gccasm.txt.html)
+```
+g - general effective address
+m - memory effective address
+r - register
+i - immediate value, 0..0xffffffff
+n - immediate value known at compile time.
+    ("i" would allow an address known only at link time)
+
+But there are some i386-specific ones described in the processor-specific
+part of the manual and in more detail in GCC's i386.h:
+
+q - byte-addressable register (eax, ebx, ecx, edx)
+A - eax or edx
+a, b, c, d, S, D - eax, ebx, ecx, edx, esi, edi respectively
+
+I - immediate 0..31
+J - immediate 0..63
+K - immediate 255
+L - immediate 65535
+M - immediate 0..3 (shifts that can be done with lea)
+N - immediate 0..255 (one-byte immediate value)
+```
