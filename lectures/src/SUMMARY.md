@@ -11,3 +11,8 @@
 - [Язык Си](10-c/index.md)
   - [Динамическая память](11-c-continued/index.md)
   - [Bits and pieces](12-c-bit-twiddling/index.md)
+- [«Системное программирование»](13-io/index.md)
+  - [Прерывания](interrupts/Interrupts.md)
+  - [Кольца защиты](15-rings/rings.md)
+- [Файлы](16-files/index.md)
+- [Вещественные числа](18-floating-point-arithmetic/index.md)
