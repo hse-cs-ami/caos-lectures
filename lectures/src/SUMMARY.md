@@ -16,3 +16,4 @@
   - [Кольца защиты](15-rings/rings.md)
 - [Файлы](16-files/index.md)
 - [Вещественные числа](18-floating-point-arithmetic/index.md)
+- [Внутренности современных процессоров](x1-cpu-internals/index.md)
