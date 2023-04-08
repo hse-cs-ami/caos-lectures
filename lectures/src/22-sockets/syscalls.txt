@@ -1,0 +1,17 @@
+
+        
+
+        server              client
+        passive             active
+
+                getaddrinfo()
+                fd = socket()
+
+        bind()
+        listen()
+        conn = accept(fd)
+        read/write(conn)
+        close(conn)
+
+                            connect()
+                            read/write(fd)
