@@ -16,4 +16,7 @@
   - [Кольца защиты](15-rings/rings.md)
 - [Файлы](16-files/index.md)
 - [Вещественные числа](18-floating-point-arithmetic/index.md)
+- [Сети и сокеты](22-sockets/index.md)
 - [Внутренности современных процессоров](x1-cpu-internals/index.md)
+- [Работа с общей памятью](25-shared-mem/index.md)
+    - [RMW](26-parallel-2/index.md)

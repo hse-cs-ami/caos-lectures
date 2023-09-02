@@ -1,6 +1,6 @@
 # shared_mem
 
-Мы уже умеем делать “многопоточные программы”: `mmap(MAP_SHARED); fork()`.
+Пока будем организовывать себе разделяемую память по старинке: `mmap(MAP_SHARED); fork()`.
 
 ### Неожиданности на уровне ассемблера
 
@@ -42,11 +42,11 @@ mov y, %eax        mov x, %ecx
 
 Дело в том, что мы для скорости добавляем в процессоры кэши:
 
-![Untitled](shared_mem%2026be744fb8b849168a05841298cbc222/Untitled.png)
+![Untitled](Untitled.png)
 
 Нашу любимую архитектуру x86 можно представить так (Total Store Order):
 
-![Untitled](shared_mem%2026be744fb8b849168a05841298cbc222/Untitled%201.png)
+![Untitled](Untitled%201.png)
 
 Возможно, один процессор записал в свой write buffer  `x=1` , другой `y=2`, но пока не записали это в общую память, а прочитали из общей памяти старые значения.
 
@@ -66,7 +66,7 @@ y = 1                 r2 = x
 
 Но такое может быть на архитектуре ARM:
 
-![Untitled](shared_mem%2026be744fb8b849168a05841298cbc222/Untitled%202.png)
+![Untitled](Untitled%202.png)
 
 Чтобы можно было писать программы, процессор гарантирует некоторую *модель памяти*: что может происходить, а что нет.
 
@@ -127,9 +127,9 @@ Atomic vs volatile: [https://godbolt.org/z/zT55bhzs8](https://godbolt.org/z/zT55
 
 ```c
 Thread 1        Thread 2
-W(x, 1)                    // happens before S(m)
-//SW(done, 1)---SR(done)   // happens before R(x)
-	              R(x)       // happens after S(m)
+W(x, 1)                    // happens before SW(done)
+SW(done, 1) ---  SR(done)  // happens before R(x)
+	             R(x)      // happens after SR(m)
 
 // W(x, 1) → SW → SR → R(x)
 

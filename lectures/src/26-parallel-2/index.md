@@ -2,10 +2,10 @@
 
 ### RMW
 
-x86:
+x86: префикс [lock](https://www.felixcloutier.com/x86/lock):
 
 ```c
-[lock](https://www.felixcloutier.com/x86/lock) add/sub/xor/...
+lock add/sub/xor/...
 
 xchg %r32, m32  //  exchange; "lock" implied
 
@@ -17,7 +17,7 @@ lock cmpxchg %r32, m32  // CAS — compare and swap
 // Else, clear ZF and load m32 into %eax.
 ```
 
-C11:
+C11: [stdatomic.h](https://en.cppreference.com/w/c/atomic)
 
 ```c
 #include <stdatomic.h>
@@ -35,7 +35,7 @@ Returns the result of the comparison.
 if (weak && !x86) {
 	sometimes {
 		return false;  // weak-версия иногда фейлится просто так
-    // load-linked + store-conditional — напомните рассказать, если время будет
+		// load-linked + store-conditional на ARM
 	}
 }
 atomically {
