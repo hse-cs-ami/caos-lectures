@@ -8,6 +8,7 @@
   - [Как сделать CPU из транзисторов](./06-nand2cpu.md)
   - [Обращение к памяти](./07-memory.md)
   - [Подпрограммы](08-call-ret/08-call-ret.md)
+  - [Компоновка](09-elf/index.md)
 - [Язык Си](10-c/index.md)
   - [Динамическая память](11-c-continued/index.md)
   - [Bits and pieces](12-c-bit-twiddling/index.md)
