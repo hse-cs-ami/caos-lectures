@@ -1,5 +1,11 @@
 # Как работает CPU
 
+## Class RISC pipeline
+
+![Классический 4-стадийный конвейер RISC](4-stage-pipeline.png)
+
+## Real life
+
 [Документация от Агнера Фога](https://agner.org/optimize/#manuals)
 
 [Про микроархитектуру](https://agner.org/optimize/microarchitecture.pdf)
@@ -58,11 +64,20 @@ Predict taken backwards, not taken forwards.
 ### Saturating counter
 Store state for every branch: T ↔ Weak T ↔ Weak NT ↔ NT
 
+### Return prediction
+> A Last-In-First-Out buffer, called the return stack buffer,
+remembers the return address every time a call instruction is executed, and it uses this for
+predicting where the corresponding return will go. This mechanism makes sure that return
+instructions are correctly predicted when the same subroutine is called from several
+different locations.
+
 See PDF for better methods.
 
 ## Pipeline (конвейер)
 General idea: different stages of execution require different hardware,
 so we can parallelize them.
+
+![Pentium Pro pipeline](pipeline.png)
 
 Keywords:
 * µop cache
