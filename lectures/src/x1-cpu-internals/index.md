@@ -90,3 +90,5 @@ Keywords:
 * queued in ROB (reorder buffer)
 * executing
 * retirement (register writeback etc.)
+
+![Testing branch target prediction on different CPUs](https://blog.cloudflare.com/branch-predictor/)
