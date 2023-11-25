@@ -79,6 +79,8 @@ so we can parallelize them.
 
 ![Pentium Pro pipeline](pipeline.png)
 
+[Sunny Cove pipeline](https://en.wikichip.org/wiki/intel/microarchitectures/sunny_cove#Pipeline)
+
 Keywords:
 * µop cache
 * execution unit
