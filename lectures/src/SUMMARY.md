@@ -17,6 +17,7 @@
   - [Прерывания](interrupts/Interrupts.md)
   - [Кольца защиты](15-rings/rings.md)
 - [Файлы](16-files/index.md)
+  - [Файловая система](17-file-system/index.md)
 - [Вещественные числа](18-floating-point-arithmetic/index.md)
   - [Поддержка на x86: FPU, MMX, SSE, AVX](18-x86-floating-point/index.md)
 - [Сети и сокеты](22-sockets/index.md)
