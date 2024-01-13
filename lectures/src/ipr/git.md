@@ -7,6 +7,8 @@ git(1)                   - the stupid content tracker
 
 [xkcd, объясняющий, как устроена лекция](https://xkcd.com/1597/)
 
+[The Pro Git book](https://git.github.io/git-scm.com/book/en/v2)
+
 ## Tracking work on projects
 
 Создадим *репозиторий* — директорию, в которой будет храниться исходный код нашего проекта:
@@ -154,7 +156,7 @@ $ git rev-parse HEAD~1  # ~n — n-тый прародитель
 ### branches
 Создадим дополнительную ветку разработки из предыдущего коммита:
 ```
-$ git checkout -b feature HEAD^
+$ git switch -c feature HEAD^
 Switched to a new branch 'feature'
 ```
 
@@ -169,9 +171,9 @@ README
 ```
 Как видно, в этом коммите ещё нет файла `main.c`.
 
-С помощью `git checkout` можно переключаться между ветками:
+С помощью `git switch` можно переключаться между ветками:
 ```
-chaos$ git checkout main
+chaos$ git switch main
 Switched to branch 'main'
 
 chaos$ ls
@@ -183,7 +185,7 @@ README main.c
 
 Переключимся на ветку `feature` и сделаем там новый коммит:
 ```
-$ git checkout feature
+$ git switch feature
 Switched to branch 'feature'
 
 $ echo '#include <stdio.h>' >main.c
@@ -317,7 +319,7 @@ Merge: 16b1dc9 6a83b31
 в feature изменения, сделанные в main.
 
 ```
-$ git checkout feature
+$ git switch feature
 Switched to branch 'feature'
 
 chaos$ git merge main
@@ -336,3 +338,127 @@ Fast-forward
 Нового коммита при этом не создаётся.
 
 ### remotes
+Для взаимодействия с другими репозиториями существует механизм
+`remotes`. Я сделал себе пустой репозиторий на `gitlab.myltsev.ru`
+и добавляю его как remote с именем `origin`:
+```
+$ git remote add origin git@gitlab.myltsev.ru:myltsev/chaos.git
+```
+
+Отправим туда нашу ветку `main`:
+```
+$ git push origin main
+Enumerating objects: 15, done.
+Counting objects: 100% (15/15), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (9/9), done.
+Writing objects: 100% (15/15), 1.28 KiB | 1.28 MiB/s, done.
+Total 15 (delta 1), reused 0 (delta 0), pack-reused 0
+To ssh://gitlab.myltsev.ru/myltsev/chaos.git
+ * [new branch]      main -> main
+```
+
+Можно добавлять новые коммиты в ветку `main` и отправлять их туда же той же
+командой. Если, как правило, мы будем
+отправлять коммиты из `main` именно в эту ветку этого
+remote, то имеет смысл сообщить git-у, что это ветка является
+для `main` *апстримом*. Для этого добавим опцию `-u`/`--set-upstream`:
+```
+$ git push -u origin main
+branch 'main' set up to track 'origin/main'.
+Everything up-to-date
+```
+
+В файле `.git/config` появилась соответствующая запись:
+```
+[branch "main"]
+    remote = origin
+    merge = refs/heads/main
+```
+
+`git push` будет по умолчанию работать именно с апстримной веткой.
+
+В локальном репозитории хранятся копии головных коммитов из remotes:
+
+```
+$ cat .git/refs/remotes/origin/main 
+3a4c6391190b85c8c4f9d19177d464b0acce5b36
+```
+
+`git switch` умеет догадываться о том, что локальную ветку нужно создать из
+remote-ветки с таким же названием:
+
+```
+$ git switch tmp
+branch 'tmp' set up to track 'origin/tmp'.
+Switched to a new branch 'tmp'
+```
+
+`git fetch` обновляет `refs/remotes` и приносит
+в локальное хранилище недостающие объекты.
+
+`git pull` — это сочетание `fetch + merge`:
+обновить локальные копии remote-коммитов и провести слияние.
+Если локально новых коммитов в ветке нет, а в remote они появились,
+то fetch принесёт их в локальный репозиторий, а merge
+сведётся к перемотке:
+
+```
+$ git pull
+Updating 3a4c639..20992d8
+Fast-forward
+ main.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+```
+
+`git push` по умолчанию работает, только если remote-ветка
+является предком локальной (то есть её можно перемотать
+до локальной). Если remote-ветка и локальная ветка не являются
+предками друг друга (divergent branches), то `push`
+отказывается работать:
+
+```
+$ git push
+To ssh://gitlab.myltsev.ru/myltsev/chaos.git
+ ! [rejected]        main -> main (fetch first)
+error: failed to push some refs to 'ssh://gitlab.myltsev.ru/myltsev/chaos.git'
+hint: Updates were rejected because the remote contains work that you do not
+hint: have locally. This is usually caused by another repository pushing to
+hint: the same ref. If you want to integrate the remote changes, use
+hint: 'git pull' before pushing again.
+hint: See the 'Note about fast-forwards' in 'git push --help' for details.
+```
+
+Беда в том, что по умолчанию git pull в этой ситуации тоже
+по умолчанию ведёт себя несговорчиво:
+
+```
+$ git pull
+remote: Enumerating objects: 5, done.
+remote: Counting objects: 100% (5/5), done.
+remote: Compressing objects: 100% (3/3), done.
+remote: Total 3 (delta 1), reused 0 (delta 0), pack-reused 0
+Unpacking objects: 100% (3/3), 281 bytes | 140.00 KiB/s, done.
+From ssh://gitlab.myltsev.ru/myltsev/chaos
+   20992d8..f54e8cf  main       -> origin/main
+hint: You have divergent branches and need to specify how to reconcile them.
+hint: You can do so by running one of the following commands sometime before
+hint: your next pull:
+hint: 
+hint:   git config pull.rebase false  # merge
+hint:   git config pull.rebase true   # rebase
+hint:   git config pull.ff only       # fast-forward only
+hint: 
+hint: You can replace "git config" with "git config --global" to set a default
+hint: preference for all repositories. You can also pass --rebase, --no-rebase,
+hint: or --ff-only on the command line to override the configured default per
+hint: invocation.
+fatal: Need to specify how to reconcile divergent branches.
+```
+
+Безопасным вариантом в данном случае является опция
+`--no-rebase`, которая выполнит слияние локальной и удалённой
+ветки.
+
+### rebasing
+⚠ Here be dragons!
