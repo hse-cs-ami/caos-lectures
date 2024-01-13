@@ -151,6 +151,7 @@ $ git rev-parse HEAD~1  # ~n — n-тый прародитель
 
 ## Just memorize these shell commands
 
+### branches
 Создадим дополнительную ветку разработки из предыдущего коммита:
 ```
 $ git checkout -b feature HEAD^
@@ -198,3 +199,40 @@ $ git commit -m 'Include stdio.h.'
 Теперь у нас есть две ветки, которые не являются предками
 друг друга:
 ![](git-log-graph.png)
+
+### index
+
+В рабочей копии могут быть файлы, которые git не отслеживает, —
+например, объектные, исполняемые и временные файлы.
+Кроме того, не все изменения в отслеживаемых файлах обязаны
+включаться в следующий коммит.
+
+Чтобы подготовить содержимое следующего коммита, в `git` есть
+*индекс* (index или *staging area*). Получается такой маршрут:
+
+1. Правим файлы в рабочей копии (`vim`).
+2. Копируем изменения в индекс (`git add` и др.).
+3. Создаём коммит с содержимым индекса (`git commit`).
+
+Попробуем сделать изменения, но не добавлять их в индекс,
+а сразу сделать новый коммит:
+```
+$ echo '#include <stdlib.h>' >>main.c
+
+$ git commit
+On branch main
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   main.c
+
+no changes added to commit (use "git add" and/or "git commit -a")
+```
+
+Наши изменения сейчас есть только в рабочей копии, но не в индексе:
+<img src="git-diff.png" width="250"/>
+
+
+
+### merging
+Добавим немного текста 
