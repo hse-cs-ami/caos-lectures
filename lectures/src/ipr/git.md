@@ -197,7 +197,7 @@ $ git commit -m 'Include stdio.h.'
 ```
 
 Теперь у нас есть две ветки, которые не являются предками
-друг друга:
+друг друга (diverging branches):
 ![](git-log-graph.png)
 
 ### index
@@ -232,7 +232,73 @@ no changes added to commit (use "git add" and/or "git commit -a")
 Наши изменения сейчас есть только в рабочей копии, но не в индексе:
 <img src="git-diff.png" width="250"/>
 
+Добавим их в индекс и создадим новый коммит:
+```
+chaos$ git add main.c
 
+chaos$ git diff --cached --stat
+ main.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+chaos$ git commit -m 'Include stdlib.h.'
+[main 16b1dc9] Include stdlib.h.
+ 1 file changed, 1 insertion(+)
+```
 
 ### merging
-Добавим немного текста 
+Для слияния изменений в разных ветках имеется команда `git merge`.
+Попытаемся учесть в `main` изменения, сделанные в `feature`.
+
+```
+$ git merge feature
+Auto-merging main.c
+CONFLICT (add/add): Merge conflict in main.c
+Automatic merge failed; fix conflicts and then commit the result.
+```
+
+git не знает, как объединить изменения, сделанные в двух ветках.
+Поэтому он оставляет в файле `main.c` маркеры конфликта,
+а сам файл в индексе помечен как unmerged:
+
+```
+chaos$ cat main.c 
+««««««« HEAD
+#include <stdlib.h>
+=======
+#include <stdio.h>
+»»»»»»» feature
+
+chaos$ git status
+On branch main
+You have unmerged paths.
+  (fix conflicts and run "git commit")
+  (use "git merge --abort" to abort the merge)
+
+Unmerged paths:
+  (use "git add <file>..." to mark resolution)
+        both added:      main.c
+
+no changes added to commit (use "git add" and/or "git commit -a")
+```
+
+Чтобы завершить слияние, нужно отредактировать unmerged
+файлы и добавить в индекс их правильные версии, а затем
+создать коммит:
+```
+$ vim main.c 
+$ git add main.c
+$ git commit
+[main 3a4c639] Merge branch 'feature'
+```
+
+Созданный коммит является слиянием (merge commit),
+то есть имеет больше одного родителя:
+```
+$ git show
+commit 3a4c6391190b85c8c4f9d19177d464b0acce5b36 (HEAD -> main)
+Merge: 16b1dc9 6a83b31
+...
+```
+
+`git log --graph` отображает это соответствующим образом:
+![](merge-graph.png)
