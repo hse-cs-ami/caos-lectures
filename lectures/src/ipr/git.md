@@ -179,3 +179,22 @@ README main.c
 
 Сейчас история коммитов выглядит так:
 ![git log screenshot](gitlog.png)
+
+Переключимся на ветку `feature` и сделаем там новый коммит:
+```
+$ git checkout feature
+Switched to branch 'feature'
+
+$ echo '#include <stdio.h>' >main.c
+
+$ git add main.c
+
+$ git commit -m 'Include stdio.h.'
+[feature 6a83b31] Include stdio.h.
+ 1 file changed, 1 insertion(+)
+ create mode 100644 main.c
+```
+
+Теперь у нас есть две ветки, которые не являются предками
+друг друга:
+![](git-log-graph.png)
