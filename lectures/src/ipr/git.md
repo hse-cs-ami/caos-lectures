@@ -122,4 +122,60 @@ ref: refs/heads/main
 Каждый `head`-коммит вместе с цепочкой его предшественников принято называть
 *веткой* разработки (branch).
 
+Теперь у нас есть возможность обращаться к коммитам как по их SHA1-хэшу,
+так и по названиям из `heads`. Чтобы добыть хэш коммита по имени, есть утилита
+`git rev-parse`:
+
+```
+$ git rev-parse main
+f5c5cbf218fe113a1fa282b6c8046a245d5a07a6
+$ git rev-parse HEAD
+f5c5cbf218fe113a1fa282b6c8046a245d5a07a6
+```
+
+На самом деле SHA1-хэш необязательно писать полностью — достаточно уникального префикса:
+
+```
+$ git rev-parse f5c5
+f5c5cbf218fe113a1fa282b6c8046a245d5a07a6
+```
+
+Есть также нотация для обращения к родительским коммитам:
+
+```
+$ git rev-parse HEAD^  # ^ — первый родитель
+12328ce18536e38c3d2a6921a953b0bea7ef1eeb
+$ git rev-parse HEAD~1  # ~n — n-тый прародитель
+12328ce18536e38c3d2a6921a953b0bea7ef1eeb
+```
+
 ## Just memorize these shell commands
+
+Создадим дополнительную ветку разработки из предыдущего коммита:
+```
+$ git checkout -b feature HEAD^
+Switched to a new branch 'feature'
+```
+
+Теперь у нас две ветки, из которых активна ветка `feature`:
+```
+$ git branch
+* feature
+  main
+
+$ ls
+README
+```
+Как видно, в этом коммите ещё нет файла `main.c`.
+
+С помощью `git checkout` можно переключаться между ветками:
+```
+chaos$ git checkout main
+Switched to branch 'main'
+
+chaos$ ls
+README main.c
+```
+
+Сейчас история коммитов выглядит так:
+![git log screenshot](gitlog.png)
