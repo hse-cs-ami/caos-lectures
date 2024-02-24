@@ -24,6 +24,7 @@
   - [Файлы](posix/files/index.md)
   - [Процессы](posix/processes/index.md)
   - [Страничная виртуальная память](posix/mmap/mmap.md)
+  - [Пользователи и группы](posix/users/users.md)
   - [Сигналы](posix/signals/index.md)
   - [Файловая система](posix/file-system/index.md)
 - [Сети и сокеты](22-sockets/index.md)
