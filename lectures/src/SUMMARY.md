@@ -21,6 +21,7 @@
   - [Кольца защиты](15-rings/rings.md)
 - [Процессы](19-process/index.md)
   - [Страничная виртуальная память](mmap/mmap.md)
+  - [Сигналы](signals/index.md)
 - [Файлы](16-files/index.md)
   - [Файловая система](17-file-system/index.md)
 - [Сети и сокеты](22-sockets/index.md)
