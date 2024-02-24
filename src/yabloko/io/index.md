@@ -32,7 +32,7 @@
 ### Memory-mapped IO
 Memory-mapped и port-mapped IO.
 
-![](../system_bus.png)
+![](system_bus.png)
 
 Например, видеопамять 
 
