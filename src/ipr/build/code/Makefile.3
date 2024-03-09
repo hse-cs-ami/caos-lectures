@@ -1,0 +1,17 @@
+CC=gcc
+CFLAGS=-Wall -Werror
+
+
+hello: main.o hello.o
+
+
+main.o: main.c
+	$(CC) -c main.c -o main.o $(CFLAGS)
+
+
+hello.o: hello.c
+	$(CC) -c hello.c -o hello.o $(CFLAGS)
+
+
+clean:
+	rm -f *.o hello

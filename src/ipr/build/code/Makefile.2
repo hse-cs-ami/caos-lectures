@@ -1,0 +1,14 @@
+
+hello: main.o hello.o
+
+
+main.o: main.c
+	gcc -c main.c -o main.o -Wall -Werror
+
+
+hello.o: hello.c
+	gcc -c hello.c -o hello.o -Wall -Werror
+
+
+clean:
+	rm -f *.o hello
