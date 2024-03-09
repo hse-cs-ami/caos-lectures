@@ -1,0 +1,35 @@
+name: C Project CI
+
+on: [push, pull_request]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      name: Checkout code
+
+    - name: Set up CMake
+      uses: actions/setup-cmake@v1
+
+    - name: Set up GCC
+      uses: actions/setup-gcc@v2
+      with:
+        gcc-version: '11'
+
+    - name: Create Build Directory
+      run: mkdir -p build
+
+    - name: Configure CMake
+      working-directory: ./build
+      run: cmake ..
+
+    - name: Build
+      working-directory: ./build
+      run: cmake --build .
+
+    - name: Test
+      working-directory: ./build
+      run: ctest
+
