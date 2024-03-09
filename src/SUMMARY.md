@@ -18,7 +18,6 @@
 - [ИПР](ipr/index.md)
   - [Git](ipr/git.md)
   - [Системы сборки](ipr/build/build.md)
-  - [Кое-что про тестирование](ipr/test/test.md)
 - [«Системное программирование»](yabloko/index.md)
   - [Взаимодействие с устройствами](yabloko/io/index.md)
   - [Прерывания](yabloko/interrupts/Interrupts.md)
