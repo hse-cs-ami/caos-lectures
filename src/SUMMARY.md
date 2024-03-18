@@ -31,6 +31,7 @@
   - [File descriptions](posix/file-descriptions/file-descriptions.md)
   - [Каналы (pipes)](posix/pipes/pipes.md)
   - [Файловая система](posix/file-system/index.md)
+- [Динамическая компоновка](dynamic-linking/index.md)
 - [Сети и сокеты](22-sockets/index.md)
 - [Работа с общей памятью](25-shared-mem/index.md)
     - [RMW](26-parallel-2/index.md)
