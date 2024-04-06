@@ -9,36 +9,39 @@ int main(int argc, char* argv[]) {
         fprintf(stderr, "Usage: %s NODE SERVICE\n", argv[0]);
         return 1;
     }   
+
+    // perform address resolution
     struct addrinfo *res = NULL;
     int gai_err;
-    if ((gai_err = getaddrinfo(argv[1], argv[2], NULL, &res))) {
+    struct addrinfo hints = {
+        .ai_family = PF_UNSPEC,
+        .ai_socktype = SOCK_STREAM,
+        .ai_flags = 0,  // try AI_ALL to include IPv6 on non-v6-enabled systems
+    };
+    if ((gai_err = getaddrinfo(argv[1], argv[2], &hints, &res))) {
         fprintf(stderr, "gai error: %s\n", gai_strerror(gai_err));
         return 2;
-    }   
+    }
+
+    // iterate over the resulting addresses
     for (struct addrinfo *ai = res; ai; ai = ai->ai_next) {
-        char buf[1024];
-        printf("ai_flags=%d, ai_family=%d, ai_socktype=%d, ai_protocol=%d\n",
-                ai->ai_flags, ai->ai_family, ai->ai_socktype, ai->ai_protocol);
-        struct sockaddr_in *inet;
-        struct sockaddr_in6 *inet6;
-        switch (ai->ai_family) {
-            case AF_INET:
-                inet = (struct sockaddr_in *)ai->ai_addr;
-                printf("\taddress: %s, port: %hu\n",
-                    inet_ntop(ai->ai_family, &inet->sin_addr,
-                        buf, sizeof(buf)),
-                    ntohs(inet->sin_port));
-                break;
-            case AF_INET6:
-                inet6 = (struct sockaddr_in6 *)ai->ai_addr;
-                printf("\taddress: %s, port: %hu\n",
-                    inet_ntop(ai->ai_family, &inet6->sin6_addr,
-                        buf, sizeof(buf)),
-                    ntohs(inet6->sin6_port));
-                break;
-            default:
-                printf("\tunknown address family\n");
+        struct protoent *proto = getprotobynumber(ai->ai_protocol);
+        if (proto) {
+            printf("ai_flags=%d, ai_family=%d, ai_socktype=%d, ai_protocol=%s\n",
+                    ai->ai_flags, ai->ai_family, ai->ai_socktype, proto->p_name);
         }
+
+        char host[1024], port[10];
+        if ((gai_err = getnameinfo(
+            ai->ai_addr, ai->ai_addrlen,
+            host, sizeof(host), port, sizeof(port),
+            NI_NUMERICHOST | NI_NUMERICSERV)))
+        {
+            fprintf(stderr, "getnameinfo error: %s\n", gai_strerror(gai_err));
+            return 3;
+        }
+
+        printf("\taddress: %s, port: %s\n", host, port);
     }   
     freeaddrinfo(res);
 }
