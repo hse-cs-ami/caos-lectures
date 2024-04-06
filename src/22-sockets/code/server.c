@@ -63,7 +63,7 @@ int main(int argc, char* argv[]) {
     }
 
     struct sockaddr_in6 address;
-    socklen_t addrlen;
+    socklen_t addrlen = sizeof(address);
     int connection = accept(sock, (struct sockaddr *) &address, &addrlen);
     char buf[512] = {0};
     inet_ntop(address.sin6_family, &address.sin6_addr, buf, sizeof(buf));
