@@ -162,119 +162,13 @@ HTTPS. Мы пока не знаем, есть ли у хоста адрес IPv
 Клиент:
 
 ```c
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netdb.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <string.h>
-
-int create_connection(char* node, char* service) {
-    struct addrinfo *res = NULL;
-    int gai_err;
-    struct addrinfo hint = {
-        .ai_family = AF_UNSPEC,     // можно и AF_INET, и AF_INET6
-        .ai_socktype = SOCK_STREAM, // но мы хотим поток (соединение)
-    };
-    if (gai_err = getaddrinfo(node, service, &hint, &res)) {
-        fprintf(stderr, "gai error: %s\n", gai_strerror(gai_err));
-        return -1;
-    }
-    int sock = -1;
-    for (struct addrinfo *ai = res; ai; ai = ai->ai_next) {
-        sock = socket(ai->ai_family, ai->ai_socktype, 0);
-        if (sock < 0) {
-            perror("socket");
-            continue;
-        }
-        if (connect(sock, ai->ai_addr, ai->ai_addrlen) < 0) {
-            perror("connect");
-            close(sock);
-            sock = -1;
-            continue;
-        }
-        break;
-    }
-    freeaddrinfo(res);
-    return sock;
-}
-
-int main(int argc, char* argv[]) {
-    if (argc != 3) {
-        fprintf(stderr, "Usage: %s NODE SERVICE\n", argv[0]);
-        return 1;
-    }
-    int sock = create_connection(argv[1], argv[2]);
-    if (sock < 0) {
-        return 1;
-    }
-    char* msg = "hello world\n";
-    write(sock, msg, strlen(msg));
-    close(sock);
-}
+{{#rustdoc_include code/client.c}}
 ```
 
 Сервер:
 
 ```c
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netdb.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <string.h>
-
-int create_listener(char* service) {
-    struct addrinfo *res = NULL;
-    int gai_err;
-    struct addrinfo hint = {
-        .ai_family = AF_UNSPEC,
-        .ai_socktype = SOCK_STREAM,
-        .ai_flags = AI_PASSIVE,
-    };
-    if (gai_err = getaddrinfo(NULL, service, &hint, &res)) {
-        fprintf(stderr, "gai error: %s\n", gai_strerror(gai_err));
-        return -1;
-    }
-    int sock = -1;
-    for (struct addrinfo *ai = res; ai; ai = ai->ai_next) {
-        sock = socket(ai->ai_family, ai->ai_socktype, 0);
-        if (sock < 0) {
-            perror("socket");
-            continue;
-        }
-        if (bind(sock, ai->ai_addr, ai->ai_addrlen) < 0) {
-            perror("bind");
-            close(sock);
-            sock = -1;
-            continue;
-        }
-        if (listen(sock, SOMAXCONN) < 0) {
-            perror("listen");
-            close(sock);
-            sock = -1;
-            continue;
-        }
-        break;
-    }
-    freeaddrinfo(res);
-    return sock;
-}
-
-int main(int argc, char* argv[]) {
-    if (argc != 2) {
-        fprintf(stderr, "Usage: %s SERVICE\n", argv[0]);
-        return 1;
-    }
-    int sock = create_listener(argv[1]);
-    if (sock < 0) {
-        return 1;
-    }
-    int connection = accept(sock, NULL, NULL);
-    char* msg = "hello world\n";
-    write(connection, msg, strlen(msg));
-    close(sock);
-}
+{{#rustdoc_include code/server.c}}
 ```
 
 ### Датаграммные сокеты
