@@ -165,7 +165,7 @@ HTTPS. Мы пока не знаем, есть ли у хоста адрес IPv
 {{#rustdoc_include code/client.c}}
 ```
 
-Сервер:
+Сервер, принимающий одно соединение:
 
 ```c
 {{#rustdoc_include code/server.c}}

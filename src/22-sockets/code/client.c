@@ -44,8 +44,10 @@ int main(int argc, char* argv[]) {
     if (sock < 0) {
         return 1;
     }
-    char* msg = "hello world\n";
-    write(sock, msg, strlen(msg));
+    char buf[1024] = {0};
+    if (read(sock, &buf, sizeof(buf) - 1) > 0) {
+        printf("received message: %s\n", buf);
+    }
     close(sock);
 }
 

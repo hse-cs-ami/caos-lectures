@@ -10,7 +10,7 @@ int create_listener(char* service) {
     struct addrinfo *res = NULL;
     int gai_err;
     struct addrinfo hint = {
-        .ai_family = AF_UNSPEC,
+        .ai_family = AF_INET6,
         .ai_socktype = SOCK_STREAM,
         .ai_flags = AI_PASSIVE,
     };
@@ -23,6 +23,13 @@ int create_listener(char* service) {
         sock = socket(ai->ai_family, ai->ai_socktype, 0);
         if (sock < 0) {
             perror("socket");
+            continue;
+        }
+        int one = 1;
+        if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one))) {
+            perror("setsockopt");
+            close(sock);
+            sock = -1;
             continue;
         }
         if (bind(sock, ai->ai_addr, ai->ai_addrlen) < 0) {
@@ -56,14 +63,14 @@ int main(int argc, char* argv[]) {
         int connection = accept(sock, NULL, NULL);
         if (fork() == 0) {
             // worker
-            char* msg = "hello world\n";
+            close(sock);  // we won't be accepting anything here
+            char* msg = "hello world";
             write(connection, msg, strlen(msg));
             return 0;
         } else {
             close(connection);
             while (waitpid(-1, NULL, WNOHANG) > 0);
         }
-        sleep(100);
     }
     close(sock);
 }
