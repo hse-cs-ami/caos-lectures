@@ -44,7 +44,7 @@ int create_listener(char* service) {
             goto err;
         }
         break;
-    err:
+err:
         close(sock);
         sock = -1;
     }

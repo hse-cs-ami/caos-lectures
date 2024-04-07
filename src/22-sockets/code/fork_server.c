@@ -28,23 +28,20 @@ int create_listener(char* service) {
         int one = 1;
         if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one))) {
             perror("setsockopt");
-            close(sock);
-            sock = -1;
-            continue;
+            goto err;
         }
         if (bind(sock, ai->ai_addr, ai->ai_addrlen) < 0) {
             perror("bind");
-            close(sock);
-            sock = -1;
-            continue;
+            goto err;
         }
         if (listen(sock, 1) < 0) {
             perror("listen");
-            close(sock);
-            sock = -1;
-            continue;
+            goto err;
         }
         break;
+err:
+        close(sock);
+        sock = -1;
     }
     freeaddrinfo(res);
     return sock;
