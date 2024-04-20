@@ -33,5 +33,6 @@
   - [Файловая система](posix/file-system/index.md)
 - [Динамическая компоновка](dynamic-linking/index.md)
 - [Сети и сокеты](22-sockets/index.md)
+  - [Мультиплексирование](23-mplex/mplex.md)
 - [Работа с общей памятью](25-shared-mem/index.md)
     - [RMW](26-parallel-2/index.md)
