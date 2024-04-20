@@ -180,3 +180,9 @@ HTTPS. Мы пока не знаем, есть ли у хоста адрес IPv
        ssize_t recvfrom(int sockfd, void *buf, size_t len, int flags,
                         struct sockaddr *src_addr, socklen_t *addrlen);
 ```
+
+### Unix domain sockets
+
+```c
+{{#rustdoc_include code/unix_server.c}}
+```

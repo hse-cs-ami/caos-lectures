@@ -13,7 +13,7 @@ int create_listener(char* service) {
     struct addrinfo *res = NULL;
     int gai_err;
     struct addrinfo hint = {
-        .ai_family = AF_UNSPEC,
+        .ai_family = AF_INET6,
         .ai_socktype = SOCK_STREAM,
         .ai_flags = AI_PASSIVE,
     };
