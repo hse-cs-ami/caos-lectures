@@ -186,3 +186,10 @@ HTTPS. Мы пока не знаем, есть ли у хоста адрес IPv
 ```c
 {{#rustdoc_include code/unix_server.c}}
 ```
+
+
+### Ещё об адресах
+
+[Структуры sockaddr_*](https://man.archlinux.org/man/sockaddr_storage.3type.en)
+
+[Сетевой порядок байт](https://man.archlinux.org/man/byteorder.3.en)
