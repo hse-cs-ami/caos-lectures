@@ -1,23 +1,23 @@
-#include <sys/types.h>
-#include <sys/socket.h>
 #include <netdb.h>
 #include <stdio.h>
-#include <unistd.h>
 #include <string.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 int create_connection(char* node, char* service) {
-    struct addrinfo *res = NULL;
+    struct addrinfo* res = NULL;
     int gai_err;
     struct addrinfo hint = {
-        .ai_family = AF_UNSPEC,     // можно и AF_INET, и AF_INET6
-        .ai_socktype = SOCK_STREAM, // но мы хотим поток (соединение)
+        .ai_family = AF_UNSPEC,       // можно и AF_INET, и AF_INET6
+        .ai_socktype = SOCK_STREAM,   // но мы хотим поток (соединение)
     };
     if ((gai_err = getaddrinfo(node, service, &hint, &res))) {
         fprintf(stderr, "gai error: %s\n", gai_strerror(gai_err));
         return -1;
     }
     int sock = -1;
-    for (struct addrinfo *ai = res; ai; ai = ai->ai_next) {
+    for (struct addrinfo* ai = res; ai; ai = ai->ai_next) {
         sock = socket(ai->ai_family, ai->ai_socktype, 0);
         if (sock < 0) {
             perror("socket");
@@ -50,4 +50,3 @@ int main(int argc, char* argv[]) {
     }
     close(sock);
 }
-

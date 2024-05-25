@@ -1,25 +1,25 @@
-#include <sys/types.h>
-#include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <stdio.h>
-#include <unistd.h>
 #include <string.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 int create_listener(char* service) {
-    struct addrinfo *res = NULL;
+    struct addrinfo* res = NULL;
     int gai_err;
     struct addrinfo hint = {
         .ai_family = AF_INET6,
         .ai_socktype = SOCK_DGRAM,
-        .ai_flags = AI_PASSIVE,  // get addresses suitable for a server to bind to
+        .ai_flags = AI_PASSIVE,   // get addresses suitable for a server to bind to
     };
     if ((gai_err = getaddrinfo(NULL, service, &hint, &res))) {
         fprintf(stderr, "gai error: %s\n", gai_strerror(gai_err));
         return -1;
     }
     int sock = -1;
-    for (struct addrinfo *ai = res; ai; ai = ai->ai_next) {
+    for (struct addrinfo* ai = res; ai; ai = ai->ai_next) {
         // create socket of the suitable family (AF_INET or AF_INET6)
         sock = socket(ai->ai_family, ai->ai_socktype, 0);
         if (sock < 0) {
@@ -40,7 +40,7 @@ int create_listener(char* service) {
             goto err;
         }
         break;
-    err:
+err:
         close(sock);
         sock = -1;
     }
@@ -62,14 +62,11 @@ int main(int argc, char* argv[]) {
         struct sockaddr_in6 address;
         socklen_t addrlen = sizeof(address);
         char buf[1024];
-        ssize_t size = recvfrom(
-                sock, buf, sizeof(buf), 0,
-                (struct sockaddr *)&address, &addrlen);
+        ssize_t size = recvfrom(sock, buf, sizeof(buf), 0, (struct sockaddr*)&address, &addrlen);
         if (size > sizeof(buf)) {
             printf("truncated\n");
             size = sizeof(buf);
         }
-        sendto(sock, buf, size, 0, (struct sockaddr *)&address, addrlen);
+        sendto(sock, buf, size, 0, (struct sockaddr*)&address, addrlen);
     }
 }
-
