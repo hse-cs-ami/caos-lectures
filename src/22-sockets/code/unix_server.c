@@ -1,10 +1,10 @@
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/un.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <sys/un.h>
+#include <unistd.h>
 
 int create_listener(const char* path) {
     struct sockaddr_un address = {.sun_family = AF_UNIX};
@@ -21,7 +21,7 @@ int create_listener(const char* path) {
     }
 
     // try to bind and listen
-    if (bind(sock, (struct sockaddr *)&address, sizeof(address)) < 0) {
+    if (bind(sock, (struct sockaddr*)&address, sizeof(address)) < 0) {
         perror("bind");
         goto err;
     }
@@ -48,7 +48,7 @@ int main(int argc, char* argv[]) {
 
     struct sockaddr_un address;
     socklen_t addrlen = sizeof(address);
-    int connection = accept(sock, (struct sockaddr *) &address, &addrlen);
+    int connection = accept(sock, (struct sockaddr*)&address, &addrlen);
     printf("addrlen is %d\n", addrlen);
     printf("client address is %s\n", address.sun_path + 1);
 
