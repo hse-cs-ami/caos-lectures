@@ -16,7 +16,7 @@
 - [Вещественные числа](18-floating-point-arithmetic/index.md)
   - [Поддержка на x86: FPU, MMX, SSE, AVX](18-x86-floating-point/index.md)
 - [ИПР](ipr/index.md)
-  - [Git](ipr/git.md)
+  - [Git](ipr/git/git.md)
   - [Системы сборки](ipr/build/build.md)
 - [«Системное программирование»](yabloko/index.md)
   - [Взаимодействие с устройствами](yabloko/io/index.md)

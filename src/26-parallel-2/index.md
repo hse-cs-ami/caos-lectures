@@ -57,26 +57,17 @@ C++: [cppreference](https://en.cppreference.com/w/cpp/atomic).
 ```c
 struct list {
 	int val;
-  struct list* next;
+  	struct list* next;
 }
 
 void push(struct list** head, int value) {
 	struct list *node = calloc(1, sizeof(*node));
-  node->val = value;
-	spin_lock(lock);
-  {
-    node->next = *head;
-    *head = node;
-  }
-  spin_unlock(lock);
+	node->val = value;
+	// ↓↓↓
+	node->next = *head;
+	*head = node;
+	// ↑↑↑
 }
-
-/*
-Thread 0         Thread 1
-*head = node;
-lock = 0;  ----> lock == 0
-                 node->next = *head;
-*/
 ```
 
 Mutex — от MUTual EXclusion.
@@ -120,7 +111,9 @@ void spin_unlock(spinlock *s) {
 }
 ```
 
-Спинлок отлично работает, когда защищает пару инструкций, но бесконечно тратит ресурсы, если нужно подождать подольше. На этот случай нам нужен способ остановиться и подождать, а с этим нам может помочь только ядро.
+Спинлок отлично работает, когда защищает пару инструкций, но бесконечно тратит
+ресурсы, если нужно подождать подольше. На этот случай нам нужен способ
+остановиться и подождать, а с этим нам может помочь только ядро.
 
 ### Фьютексы
 
@@ -156,7 +149,7 @@ void mutex_lock(struct mutex *m) {
 
 void mutex_unlock(struct mutex *m) {
 	m->lock = 0;
-  if (m->waiters > 0) {
+	if (m->waiters > 0) {
 		futex_wake(&m->lock, 1);
 	}
 }
@@ -167,9 +160,12 @@ struct object {
 }
 ```
 
-Настоящий мьютекс занимает одно 32-битное значение и немножко ждёт как спинлок в надежде, что не придётся делать futex_wait, но в целом устроен так же.
+Настоящий мьютекс занимает одно 32-битное значение и немножко ждёт как спинлок
+в надежде, что не придётся делать futex_wait, но в целом устроен так же.
 
-Сравнить реализации: [мьютекс из musl](https://git.musl-libc.org/cgit/musl/tree/src/thread/pthread_mutex_timedlock.c?h=v1.1.15), [статья Дреппера про фьютексы](https://github.com/tpn/pdfs/blob/master/Futexes%20Are%20Tricky%20-%20Ulrich%20Drepper%20(2011).pdf).
+Сравнить реализации:
+* [мьютекс из musl](https://git.musl-libc.org/cgit/musl/tree/src/thread/pthread_mutex_timedlock.c?h=v1.1.15),
+* [статья Дреппера про фьютексы](https://github.com/tpn/pdfs/blob/master/Futexes%20Are%20Tricky%20-%20Ulrich%20Drepper%20(2011).pdf).
 
 Contention («конкуренция»?). Оптимизируем uncontended case.
 
