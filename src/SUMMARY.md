@@ -18,6 +18,7 @@
 - [ИПР](ipr/index.md)
   - [Git](ipr/git/git.md)
   - [Системы сборки](ipr/build/build.md)
+  - [Контейнеры](ipr/containers/containers.md)
 - [«Системное программирование»](yabloko/index.md)
   - [Взаимодействие с устройствами](yabloko/io/index.md)
   - [Прерывания](yabloko/interrupts/Interrupts.md)
@@ -36,3 +37,5 @@
   - [Мультиплексирование](23-mplex/mplex.md)
 - [Работа с общей памятью](25-shared-mem/index.md)
     - [RMW](26-parallel-2/index.md)
+- [Использование GPU](gpu/gpu.md)
+- [Темы экзамена по ОС](exam/exam.md)
