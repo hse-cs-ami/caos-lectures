@@ -2,8 +2,8 @@
 Сохранить значение регистра eax по адресу 0x40100,
 а потом загрузить обратно в регистр ebx:
 ```x86asm
-    mov %eax, 0x40100
-    mov 0x40100, %ebx
+    mov [0x40100], eax
+    mov ebx, [0x40100]
 ```
 
 (При этом мы используем 4 байта по адресам
@@ -12,14 +12,14 @@
 Положить в память по адресу 0x40100 целое число
 0x1543:
 ```x86asm
-    movl $0x1543, 0x40100
+    mov dword ptr [0x40100], 0x1543
 ```
 
 Как правило, мы используем в качестве адресов метки:
 ```x86asm
     .global main
 main:
-    mov x, %eax
+    mov edi, [rip+x]
     call writei32
     call finish
 
@@ -30,12 +30,12 @@ x:  .int 43
 ```x86asm
     .global main
 main:
-    incl x
+    inc [rip+x]
     call finish
 
 x:  .int 43
 ```
-При попытке исполнения инструкции `incl` операционная система
+При попытке исполнения инструкции `inc` операционная система
 остановит программу с сообщением «Segmentation fault»,
 поскольку эти данные нельзя менять.
 
@@ -47,7 +47,7 @@ x:  .int 43
 
 Данные можно положить в секцию `.data`:
 ```x86asm
-    incl x
+    inc [x]
 
     .data
 x:  .int 43
@@ -59,7 +59,7 @@ x:  .int 43
 Обратите внимание, что ассемблер собирает вместе содержимое каждой
 из секций: в примере выше инструкция `call` окажется в памяти
 (и в исполняемом файле)
-сразу после `incl`.
+сразу после `inc`.
 
 Есть также секция .bss, в которую можно положить только нулевые байты:
 ```x86asm
@@ -72,12 +72,12 @@ z:  .int 0
 Typical memory layout:
 ```
            ┌──────────────────┐    Executable file
-0x0000_0000│//////////////////│   ┌───────────────┐
+0x00...0000│//////////////////│   ┌───────────────┐
            │//////////////////│   │ headers       │
            ├──────────────────┤   ├───────────────┤
            │.text   (read and │   │.text          │
            │         execute) │   │               │
-      eip─►│                  │   │               │
+      rip─►│                  │   │               │
            │                  │   │               │
            │                  │   │               │
            ├──────────────────┤   ├───────────────┤
@@ -94,14 +94,14 @@ Typical memory layout:
            │//////////////////│
            │//////////////////│
            │//////////////////│
-      esp─►│stack             │
+      rsp─►│stack             │
            │                  │
            │                  │
            │                  │
            │                  │
            ├──────────────────┤
            │//////////////////│
-0xffff_ffff│//////////////////│
+0xff...ffff│//////////////////│
            └──────────────────┘
 ```
 
@@ -120,22 +120,28 @@ pi_digits:
 x86 — little endian:
 ```x86asm
     // 0x40100:  00 00 00 00  00 00 00 00
-    movl $0xabcdef, 0x40100
+    mov [0x40100], 0xabcdef
     // 0x40100:  ef cd ab 00  00 00 00 00
 ```
 Младший байт по младшему адресу в памяти.
 
 ## Расширение
 
-```x86asm
-    movzbl %al, %edi  // zero-extend, расширение нулями
-    movsbl %al, %edi  // sign-extend, расширение знаковым битом
-    cdq  // sign-extend eax to edx:eax
-```
-
-В синтаксисе Intel —
 [movzx](https://www.felixcloutier.com/x86/movzx),
 [movsx](https://www.felixcloutier.com/x86/movsx).
+
+```x86asm
+    movzx edi, al  // zero-extend, расширение нулями
+    movsx edi, al  // sign-extend, расширение знаковым битом
+    cqo  // convert quad-word to octo-word: sign-extend rax to rdx:rax
+```
+
+## Умножение и деление
+
+[mul](https://www.felixcloutier.com/x86/mul),
+[imul](https://www.felixcloutier.com/x86/imul),
+[div](https://www.felixcloutier.com/x86/div),
+[idiv](https://www.felixcloutier.com/x86/idiv).
 
 ## Разные способы адресации в x86
 
