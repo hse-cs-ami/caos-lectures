@@ -16,16 +16,16 @@
 ```x86asm
 // ISA instructions → µops (names made up)
 
-add %eax, x         → µload  x, %tmp1
-                      µadd   %eax, %tmp1
-                      µstore %tmp1, x
+add [x], eax        → µload  tmp1, [x]
+                      µadd   tmp1, eax
+                      µstore [x], tmp1
 ```
 
 ```x86asm
-mov mem1, %eax
-imul $5, %eax
-add mem2, %eax  // fetch started before imul
-mov %eax, mem3
+mov eax, [mem1]
+imul eax, 5
+add eax, [mem2]  // fetch started before imul
+mov [mem3], eax
 ```
 
 ### Register renaming
@@ -35,13 +35,13 @@ instruction writes to or modifies a logical register, the microprocessor assigns
 temporary register to that logical register.
 
 ```x86asm
-movl mem1, %eax
-imull $6, %eax
-movl %eax, mem2
+mov eax, [mem1]
+imul eax, eax, 6
+mov [mem2], eax
 
-movl mem3, %eax  // old value of eax dropped
-addl $2, %eax
-movl %eax, mem4  // eax retirement
+mov eax, [mem3]  // old value of eax dropped
+add eax, 2
+mov [mem4], eax  // eax retirement
 ```
 
 ## Branch prediction (предсказание переходов)
@@ -93,4 +93,4 @@ Keywords:
 * executing
 * retirement (register writeback etc.)
 
-![Testing branch target prediction on different CPUs](https://blog.cloudflare.com/branch-predictor/)
+[Testing branch target prediction on different CPUs](https://blog.cloudflare.com/branch-predictor/)
