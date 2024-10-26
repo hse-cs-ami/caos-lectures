@@ -72,12 +72,28 @@ LLONG_MAX, ULLONG_MAX
   адреса в памяти: `intptr_t, uintptr_t`
 * `int8_min_t` (минимум 8 бит, но может быть больше, если платформой не поддерживается вариант с 8 битами), `int8_fast_t`(минимум 8 бит, но больше, если вычисления так производить быстрее)
 
-Литералы:
+Для целого литерала выбирается первый тип из списка, который может его вместить:
+* для десятичных констант — `int`, `long`, `long long`;
+* для восьмеричных и шестнадцатеричных констант — `int`, `unsigned`, `long`, `unsigned long`,
+  `long long`, `unsigned long long`.
+
+Например:
 ```c
-0   // int
-0U  // unsigned
-0UL // unsigned long
-0LL // long long
+10  // тип int
+2147483648 // на gcc/amd64 – тип long, на x86_32 – тип long long
+0x80000000 // то же число, но тип константы unsigned int
+```
+
+Суффиксы выбора типа для константы:
+```c
+0    // int
+0U   // unsigned
+0L   // long
+0UL  // unsigned long
+0LU  // unsigned long
+0LL  // long long
+0ULL // unsigned long long
+0LLU // unsigned long long
 ```
 
 ## Знаковая и беззнаковая арифметика
