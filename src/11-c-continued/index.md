@@ -42,8 +42,8 @@ typedef int (comparator_t2)(const char *, const char *); // useless
 // comparator_t2 comparator2 = strcmp;
 // ^ error: function ‘comparator2’ is initialized like a variable
 ```
----
-GCC integer overflow builtins
+
+## GCC integer overflow builtins
 ```c
 bool __builtin_add_overflow (type1 a, type2 b, type3 *res);
 bool __builtin_sub_overflow (type1 a, type2 b, type3 *res);
@@ -57,7 +57,7 @@ __builtin_add_overflow(a, b, &c);
 __builtin_add_overflow(a, b, &d);
 // -> false == no overflow
 ```
----
+
 ## Printing fixed-size types
 
 The problem:
@@ -75,16 +75,21 @@ String literal joining
 char *longstring = "There is no pain, "
                    "you are receding";
 ```
----
-```c
-#include <inttypes.h>
 
+Для каждой реализации можно определить макросы, которые будут раскрываться в нужные спецификаторы.
+Например, для amd64:
+```c
 #define PRId32 "d"
 #define PRIu32 "u"
 #define PRId64 "ld"
 #define PRIu64 "lu"
 #define SCNi32 "i"
 #define SCNiPTR "li"
+```
+
+Такие определения уже собраны для нас в стандартном заголовочном файле inttypes.h:
+```c
+#include <inttypes.h>
 
 uint32_t var;
 uintptr_t ptr;
@@ -93,10 +98,8 @@ scanf("%" SCNi32 "\n", &var);
 scanf("%" SCNiPTR "\n", &ptr);
 ```
 
----
 ## Dynamic memory
 
----
 ```c
 // man malloc
 #include <stdlib.h>
@@ -129,7 +132,7 @@ free(buf);   // OK
 buf = NULL;
 free(buf);   // OK, free is a no-op here
 ```
--i--
+---
 ```c
 int *array = calloc(30, sizeof(*array));
 ```
@@ -327,7 +330,6 @@ Union types
 ```c
 union U {
     uint32_t u;
-    float f;
     char bytes[4];
 }
 

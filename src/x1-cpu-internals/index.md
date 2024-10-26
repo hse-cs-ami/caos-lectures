@@ -1,8 +1,24 @@
 # Как работает CPU
 
-## Class RISC pipeline
+## Classic RISC pipeline
 
 ![Классический 4-стадийный конвейер RISC](4-stage-pipeline.png)
+
+[Эмулятор процессора архитектуры RISC-V](https://webriscv.dii.unisi.it/index.php)
+
+Data hazard:
+```
+  li a1, 42         # a1 = 42
+  add a2, a1, a1    # a2 = a1 + a1
+```
+
+Control hazard:
+```
+  j label           # unconditional jump
+  add a1, a2, a3    # this instruction will be flushed
+label:
+  li a1, 42
+```
 
 ## Real life
 
