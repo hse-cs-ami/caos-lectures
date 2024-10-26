@@ -263,20 +263,28 @@ int main(void) {
 ### Выравнивание типов
 
 В си происходит автоматически. Обычно выравнивание равно размеру типа, но не
-больше размера машинного слова (int) на данной платформе. Например, на 32-битной
-платформе выравнивание `long long` будет 32 бита.
+больше размера регистра. На amd64:
+```
+_Alignof(char) ==	1
+_Alignof(short) ==	2
+_Alignof(int) ==	4
+_Alignof(long) ==	8
+_Alignof(long long) ==	8
+```
 
 Чтобы элементы структуры выровнялись, компилятор вставляет между ними
 *padding* - пустые байты. У структуры в целом выравнивание максимальное из всех
 ее членов.
 
 ```c
-struct example { // 32 bit platform
+struct example { // aligned to 8 bytes
     char b;
     // 3 padding bytes
     int i;
     // no padding bytes
     long long l;
+    char c;
+    // 7 padding bytes
 };
 ```
 
