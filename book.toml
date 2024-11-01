@@ -3,7 +3,7 @@ authors = ["Alexander Myltsev"]
 language = "ru"
 multilingual = false
 src = "src"
-title = "HSE CAOS 2023"
+title = "HSE CAOS"
 
 [output.html]
 mathjax-support = true
