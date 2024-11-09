@@ -15,6 +15,7 @@
 - [Язык Си](10-c/index.md)
   - [Динамическая память](11-c-continued/index.md)
   - [Bits and pieces](12-c-bit-twiddling/index.md)
+  - [Стандартная библиотека](c-stdlib/index.md)
 - [Вещественные числа](18-floating-point-arithmetic/index.md)
   - [Поддержка на x86: FPU, MMX, SSE, AVX](18-x86-floating-point/index.md)
 - [ИПР](ipr/index.md)
