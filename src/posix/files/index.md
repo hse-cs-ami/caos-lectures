@@ -93,54 +93,39 @@ Kernelspace
 * 1 (`STDOUT_FILENO`) — standard output
 * 2 (`STDERR_FILENO`) — standard error output 
 
-> Q. Для разных процессов разные дескрипторы?
->
-> A. Да, у каждого процесса есть собственная таблица файловых дескрипторов.
-
+У каждого процесса собственная таблица файловых дескрипторов.
 
 ## POSIX file API
 
 ### Системные вызовы read и write
 
+Обёртки в стандартной библиотеке:
 ```c
 #include <unistd.h>
 
-ssize_t read(int fd, void *buf, size_t count); // ssize_t - знаковый size_t, нужен, чтобы помещалось значение -1
+ssize_t read(int fd, void *buf, size_t count); // ssize_t - знаковый size_t
 ssize_t write(int fd, const void *buf, size_t count);
 ```
 
-- если считывание прошло успешно, read возвращает количество считанных байт (0, если достигли конца файла)
-- если произошла ошибка, read возвращает -1, а также выставляет специальную переменную `errno`. В `errno` хранится номер последней произошедшей при системных вызовах ошибки
+- производят чтение/запись с текущей позиции и смещают её вперёд
+  на количество считанных/записанных байт
+- возвращают количество считанных/записанных байт
+  (read возвращает 0, только если достиг конца файла, иначе считывает
+  ненулевое количество байт, но не больше запрошенного)
+- если произошла ошибка, возвращают -1, а также выставляют специальную переменную `errno`. В `errno` хранится номер последней произошедшей при системных вызовах ошибки
 
 Напишем программу mycat, которая будет читать байты со стандартного входа и
 писать их на стандартный выход с помощью системных вызовов.
 
 ```c
-#include <unistd.h>
-
-int main() {
-    char c; // наш буфер в один байт
-    while (read(STDIN_FILENO, &c, sizeof(c)) > 0) { // STFIN_FILENO = 0
-        write(STDOUT_FILENO, &c, sizeof(c)); // STDOUT_FILENO = 1
-    }
-}
+{{rustdoc_include code/mycat.c}}
 ```
-
-Чтобы сделать конец файла, нажмем ctrl + d. Так драйвер терминала порождает конец файла.
-
-> Q. Получается, ядро считывает ввод до \n?
-> 
-> A. Да. Это можно поменять с помощью драйвера терминала.
 
 Команда strace показывает, какие системные вызовы совершает наша программа. Использовать вот так: `strace ./mycat`
 
 Наш буфер сейчас 1 байт. Если файл очень большой, то программа будет работать
 долго, поскольку каждый системный вызов занимает некоторое время. Давайте
 увеличим буфер, в который читаем файл.
-
-> Q. Не получится ли плохая ситуация, когда в файле осталось читать только 100 байт, а мы просим 200?
-> 
-> A. Нет, когда мы просим считать больше байтов, чем осталось на чтение в файле, read считывает, сколько есть.
 
 ### Системный вызов **open**
 
@@ -157,45 +142,12 @@ int open(const char *pathname, int flags, mode_t mode);
 Напишем программу, которая умеет работать с аргументами командной строки
 
 ```c
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-void catfile(int sourcefd) {
-    char buf[10000];
-    ssize_t result;
-    while ((result = read(sourcefd, buf, sizeof(buf))) > 0) {
-        write(STDOUT_FILENO, buf, result);
-    }
-}
-
-int main(int argc, char *argv[]) {
-    if (argc == 1) {
-        catfile(STDIN_FILENO);
-    } else {
-        for (int f = 1; f < argc; ++f) {
-            int fd = open(argv[f], O_RDONLY); // в argv[f] путь к файлу
-            if (fd < 0) {
-                perror("error opening file"); // print error, лежит в <stdio.h>. принимает строку, печтает ее и сообщение об ошибке, исходя из errno
-                return EXIT_FAILURE;  // EXIT_FAILURE = 1
-            }
-            catfile(fd);
-            close(fd);  // всего 1024 доступных файловых дескрипторов, хочется избежать, чтобы при каждом open давали новый файловый дескриптор
-        }
-    }
-}
+{{#rustdoc_include code/catfile.c}}
 ```
-
-> Q. Функция `_start` тоже принимает на вход аргументы командной строки?
-> 
-> A. Да, но в стеке.
 
 ## **Флаги**
 
-- Режима доступа к файлу: O_RDONLY, O_WRONLY и O_RDWR
+- Режимы доступа к файлу: O_RDONLY, O_WRONLY и O_RDWR
 - O_TRUNC обрезает файл, при открытии он получит размер 0
 - O_CREAT создаст файл, если его нет
 - O_APPEND установит файловую позицию чтения/записи на конец файла
@@ -217,44 +169,7 @@ off_t lseek(int fd, off_t offset, int whence);
 Напишем программу, которая перематывает файл на заданную позицию и там что-то записывает.
 
 ```c
-#include <unistd.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-const char usage[] = "Usage: binpatch FILE OFFSET DATA\n";
-
-int main(int argc, char *argv[]) {
-    if (argc != 4) {
-        write(STDERR_FILENO, usage, strlen(usage));
-        return EXIT_FAILURE;
-    }
-
-    const char *name = argv[1];
-    int offset = atoi(argv[2]);
-    const char *data = argv[3];
-
-    int fd = open(name, O_WRONLY | O_CREAT, S_IWUSR | S_IRUSR); // если передать название несуществующего файла, то благодаря O_CREAT он будет создан
-    if (fd < 0) {
-        perror(name);
-        return EXIT_FAILURE;
-    }
-
-    if (lseek(fd, offset, SEEK_SET) < 0) {
-        perror("seek");
-        return EXIT_FAILURE;
-    }
-    
-    if (write(fd, data, strlen(data)) < 0) {
-        perror("write");
-        return EXIT_FAILURE;
-    }
-
-    off_t position = lseek(fd, 0, SEEK_CUR);  // lseek возвращает смещение от начала записи после исполнения
-    ftruncate(fd, position);  // обрезает файл
-    // можно не закрывать файл, поскольку мы выходим из программы, и ОС подчистит все наши файловые дескрипторы 
-}
+{{#rustdoc_include code/binpatch.c}}
 ```
 
 - Если в пустом файле сдвинуть позицию на 5 байт и записать туда 3 байта, то размер файла станет 8, первые 5 байт заполнятся нулями

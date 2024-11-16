@@ -4,7 +4,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-const char usage[] = "Usage: binpatch FILE OFFSET DATA\n";
+const char usage[] =
+    "Usage: binpatch FILE OFFSET DATA\n"
+    "With empty DATA, truncates FILE at OFFSET.\n";
 
 int main(int argc, char *argv[]) {
     if (argc != 4) {
@@ -32,7 +34,10 @@ int main(int argc, char *argv[]) {
         return EXIT_FAILURE;
     }
 
-    off_t position = lseek(fd, 0, SEEK_CUR);  // lseek возвращает смещение от начала записи после исполнения
-    ftruncate(fd, position);  // обрезает файл
+    if (!strlen(data)) {
+        off_t position = lseek(fd, 0, SEEK_CUR);  // lseek возвращает смещение от начала файла
+        ftruncate(fd, position);  // обрезает файл
+    }
+
     // можно не закрывать файл, поскольку мы выходим из программы, и ОС подчистит все наши файловые дескрипторы 
 }
