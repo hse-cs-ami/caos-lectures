@@ -118,7 +118,7 @@ ssize_t write(int fd, const void *buf, size_t count);
 писать их на стандартный выход с помощью системных вызовов.
 
 ```c
-{{rustdoc_include code/mycat.c}}
+{{#rustdoc_include code/mycat.c}}
 ```
 
 Команда strace показывает, какие системные вызовы совершает наша программа. Использовать вот так: `strace ./mycat`
