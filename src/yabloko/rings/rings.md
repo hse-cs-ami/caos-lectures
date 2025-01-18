@@ -51,23 +51,15 @@ DPL (D = descriptor). Если вы пытаетесь загрузить в с�
 ```c
 #define USER 3
 #define KERNEL 0
-#define USER_BASE 0x400000 // 4 MB
 
 // SEG(EFLAGS, base, limit, privilege level) - запись сегмента в GDT
 
 void init_seg_desc(void) {
-	seg_desc[SEG_KCODE] = SEG(STA_X|STA_R, 0,         0xffffffff,       KERNEL) 
-	seg_desc[SEG_KDATA] = SEG(STA_W,       0,         0xffffffff,       KERNEL)
-	seg_desc[SEG_UCODE] = SEG(STA_X|STA_R, USER_BASE, 0xffffffff - USER_BASE, USER)
-	seg_desc[SEG_UDATA] = SEG(STA_W,       USER_BASE, 0xffffffff - USER_BASE, USER)
+	seg_desc[SEG_KCODE] = SEG(STA_X|STA_R, 0, 0xffffffff, KERNEL) 
+	seg_desc[SEG_KDATA] = SEG(STA_W,       0, 0xffffffff, KERNEL)
+	seg_desc[SEG_UCODE] = SEG(STA_X|STA_R, 0, 0xffffffff, USER)
+	seg_desc[SEG_UDATA] = SEG(STA_W,       0, 0xffffffff, USER)
 }
-
-// соответственно, физический адрес памяти вычисляется следующим образом:
-//  seg.base + instruction.offset
-```
-
-Итого, где и что лежит в физической памяти:
-```
 ```
 
 ### Обработка прерываний
