@@ -20,6 +20,7 @@
   - [Поддержка на x86: FPU, MMX, SSE, AVX](18-x86-floating-point/index.md)
 - [ИПР](ipr/index.md)
   - [Git](ipr/git/git.md)
+  - [Шелл](ipr/shell/shell.md)
   - [Системы сборки](ipr/build/build.md)
   - [Контейнеры](ipr/containers/containers.md)
 - [«Системное программирование»](yabloko/index.md)
