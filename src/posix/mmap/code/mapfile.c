@@ -16,7 +16,8 @@ int main(int argc, char* argv[]) {
     off_t filesize = lseek(fd, 0, SEEK_END);
     printf("filesize: %llu\n", (unsigned long long)filesize);
 
-    char *ptr = mmap(0, filesize, PROT_READ, MAP_PRIVATE, fd, 0);
+    printf("pid: %d\n", getpid());
+    char *ptr = mmap(0, filesize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
     printf("some file contents: %.12s\n", ptr);
 
     char buf[10];
