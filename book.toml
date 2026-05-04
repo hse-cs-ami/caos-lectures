@@ -1,9 +1,9 @@
 [book]
 authors = ["Alexander Myltsev"]
 language = "ru"
-multilingual = false
 src = "src"
 title = "HSE CAOS"
 
 [output.html]
 mathjax-support = true
+site-url = "/caos-lectures/"
